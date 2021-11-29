@@ -1,0 +1,51 @@
+---
+title: "Robust_estimator"
+author: "zhao hongqiang"
+date: "5/24/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("fpp2")
+#install.packages("robustbase")
+library(fpp2)
+data(uschange)
+library(robustbase)
+library(MASS)
+```
+# Robust estimator of a parameter of the probability distribution
+data choise Percentage changes in quarterly personal consumption expenditure, personal disposable income, production, savings and the unemployment rate for the US, 1960 to 2016.
+
+```{r}
+summary(uschange)
+head(uschange)
+```
+
+```{r}
+plot(uschange)
+```
+
+## Robust parameter estimation, using M estimation
+
+M-estimation defines a weight function such that the estimating equation becomes $\sum_{i=1}^{n} w_{i}\left(y_{i}-x^{\prime} b\right) x_{i}^{\prime}=0$
+. But the weights depend on the residuals and the residuals on the weights
+
+```{r}
+
+MM=rlm(Consumption ~ Income + Production + Unemployment + Savings,
+    data=uschange)
+summary(MM)
+```
+```{r}
+hweights <- data.frame( resid = MM$resid, weight = MM$w)
+hweights2 <- hweights[order(MM$w), ]
+hweights2[1:15, ]
+```
+We can see that roughly, as the absolute residual goes down, the weight goes up.
+
+
+
+
